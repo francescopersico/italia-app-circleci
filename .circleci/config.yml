@@ -35,6 +35,9 @@ jobs:
 
     working_directory: ~/italia-app
 
+    enviroments:
+      - TERM: "dumb"
+
     steps:
       - checkout
 
