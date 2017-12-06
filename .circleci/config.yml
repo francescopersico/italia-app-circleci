@@ -38,10 +38,6 @@ jobs:
     steps:
       - checkout
 
-      # Install sdk stuff
-      - run:
-          command: ./scripts/circleci-android-setup.sh
-
       # Restore dependencies
       - restore_cache:
           keys:
@@ -59,6 +55,14 @@ jobs:
         
       # Run tests
       - run: npm test
+
+      # Install sdk stuff
+      - run:
+          command: ./scripts/circleci-android-setup.sh
+
+      # Run gradle tests
+      - run:
+          command: cd android && ./gradlew test
 
 workflows:
   version: 2
