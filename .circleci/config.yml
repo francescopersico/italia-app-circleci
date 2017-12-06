@@ -37,6 +37,8 @@ jobs:
 
     environment:
       - TERM: "dumb"
+      - ANDROID_SDK_BUILD_TOOLS_REVISION: "23.0.1"
+      - ANDROID_SDK_BUILD_API_LEVEL="23": "23"
 
     steps:
       - checkout
@@ -55,13 +57,29 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-        
-      # Run tests
-      - run: npm test
+
+      # Restore sdk cache
+      - restore_cache:
+          keys:
+            - v1-android-sdkmanager-packages-{{ checksum "scripts/circleci-android-setup.sh" }}
+            - v1-android-sdkmanager-packages-
+
 
       # Install sdk stuff
       - run:
           command: ./scripts/circleci-android-setup.sh
+
+      # Save sdk cache
+      - save_cache:
+          paths:
+            - /opt/android/sdk/system-images/android-23
+            - /opt/android/sdk/system-images/android-19
+            - /opt/android/sdk/platforms/android-26
+            - /opt/android/sdk/platforms/android-23
+            - /opt/android/sdk/platforms/android-19
+            - /opt/android/sdk/build-tools/23.0.1
+            - /opt/android/sdk/add-ons/addon-google_apis-google-2
+          key: v1-android-sdkmanager-packages-{{ checksum "scripts/circleci-android-setup.sh" }}
 
       # Run gradle tests
       - run:
