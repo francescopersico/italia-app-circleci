@@ -38,6 +38,10 @@ jobs:
     steps:
       - checkout
 
+      # Install sdk stuff
+      - run:
+          command: ./scripts/circleci-android-setup.sh
+
       # Restore dependencies
       - restore_cache:
           keys:
