@@ -13,7 +13,7 @@ jobs:
       # Restore dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-{{ checksum "yarn.lock" }}
           - v1-dependencies-
 
       # Install node dependencies
@@ -23,7 +23,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
         
       # Run tests
       - run: npm test
@@ -41,7 +41,7 @@ jobs:
       # Restore dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-{{ checksum "yarn.lock" }}
           - v1-dependencies-
 
       # Install node dependencies
@@ -51,7 +51,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
 
       # Create bundles dir
       - run: mkdir ./bundles
@@ -66,8 +66,8 @@ jobs:
       - store_artifacts:
           path: bundles/index.android.bundle
 
-  # Build android
-  build-android:
+  # Run test on android
+  test-android:
     docker:
       - image: circleci/android:api-27-node8-alpha
 
@@ -84,7 +84,7 @@ jobs:
       # Restore dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-{{ checksum "yarn.lock" }}
           - v1-dependencies-
 
       # Install node dependencies
@@ -94,7 +94,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
 
       # Restore sdk cache
       - restore_cache:
@@ -129,8 +129,11 @@ workflows:
   build:
     jobs:
 
+      # Test Javascript
       - test-js-node-8
 
+      # Test Android
       - build-js-bundle
-
-      - build-android
+      - test-android:
+          requires:
+            - build-js-bundle
