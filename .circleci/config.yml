@@ -28,6 +28,34 @@ jobs:
       # Run tests
       - run: npm test
 
+  # Build android
+  build-android:
+    docker:
+      - image: circleci/android:api-27-node8-alpha
+
+    working_directory: ~/italia-app
+
+    steps:
+      - checkout
+
+      # Restore dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      # Install node dependencies
+      - run: npm install --no-package-lock --no-spin --no-progress
+
+      # Save node cache
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+        
+      # Run tests
+      - run: npm test
+
 workflows:
   version: 2
 
@@ -35,3 +63,5 @@ workflows:
     jobs:
 
       - test-js-node-8
+
+      - build-android
